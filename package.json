@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@compodoc/compodoc": "^1.1.19",
+    "@nestjs-packages/sqs": "^1.0.0",
     "@nestjs/axios": "0.0.8",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.1",

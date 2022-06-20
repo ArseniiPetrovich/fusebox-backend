@@ -1,0 +1,65 @@
+// 20220619174527
+// http://localhost:5002/api-json
+
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v0/studio/wallets/create": {
+      "post": {
+        "operationId": "ApiDocsController_post",
+        "parameters": [
+          {
+            "name": "API-SECRET",
+            "in": "header",
+            "description": "Your Project Secret Key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "examples": {
+                  "phoneNumber": "+972554443322"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Wallet creation job has been successfully created"
+          },
+          "403": {
+            "description": "Forbidden."
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "Charge API",
+    "description": "Charge API Docs",
+    "version": "0.0",
+    "contact": {
+      
+    }
+  },
+  "tags": [
+    {
+      "name": "charge",
+      "description": ""
+    }
+  ],
+  "servers": [
+    
+  ],
+  "components": {
+    "schemas": {
+      
+    }
+  }
+}

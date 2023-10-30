@@ -5,6 +5,10 @@ import { arrayify, computeAddress, hashMessage, recoverPublicKey } from 'nestjs-
 import { SmartWalletService } from '@app/smart-wallets-service/smart-wallets/interfaces/smart-wallets.interface'
 import { NotificationsService } from '@app/api-service/notifications/notifications.service'
 import { ConfigService } from '@nestjs/config'
+import { HttpService } from '@nestjs/axios'
+import { catchError, lastValueFrom, map } from 'rxjs'
+import { ChargeApiService } from '@app/apps-service/charge-api/charge-api.service'
+
 // import { ISmartWalletUser } from '@app/common/interfaces/smart-wallet.interface'
 // import CentrifugoAPIService from '@app/common/services/centrifugo.service'
 
@@ -14,8 +18,10 @@ export class SmartWalletsAAService implements SmartWalletService {
 
   constructor (
     private readonly jwtService: JwtService,
+    private httpService: HttpService,
     private readonly notificationsService: NotificationsService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private chargeApiService: ChargeApiService
     // private readonly centrifugoAPIService: CentrifugoAPIService,
   ) { }
 
@@ -36,7 +42,10 @@ export class SmartWalletsAAService implements SmartWalletService {
           channels: ['transaction']
         })
 
-        await this.subscribeWalletToNotifications(smartWalletAddress)
+        console.log(smartWalletAddress)
+
+        // await this.addWebhookAddress(smartWalletAddress)
+        this.chargeApiService.addWebhookAddressForAA(smartWalletAddress)
 
         return { jwt }
       } else {
@@ -48,13 +57,42 @@ export class SmartWalletsAAService implements SmartWalletService {
     }
   }
 
-  private async subscribeWalletToNotifications (walletAddress: string) {
-    const webhookID =
-      this.configService.get('INCOMING_TOKEN_TRANSFERS_WEBHOOK_ID')
+  // async httpProxyPost(url: string, requestBody: any) {
+  //   const responseData = await lastValueFrom(
+  //     this.httpService.post(url, requestBody)
+  //       .pipe(map((response) => {
+  //         return response.data
+  //       })
+  //       )
+  //       .pipe(
+  //         catchError(e => {
+  //           throw new HttpException(
+  //             `${e?.response?.statusText}: ${e?.response?.data?.error}`,
+  //             e?.response?.status
+  //           )
+  //         })
+  //       )
+  //   )
 
-    return this.notificationsService.createAddresses({
-      webhookId: webhookID, addresses: [walletAddress]
-    })
-  }
+  //   return responseData
+  // }
+
+  // private async addWebhookAddress(address: string) {
+  //   const url = `http://localhost:5002/api/v0/notifications/webhook/add-addresses?apiKey=pk_nQu6CAR89BWU863Hrq41Ta0y`
+
+  //   const requestBody = {
+  //     webhookId: this.configService.get('webhookId'),
+  //     addresses: [address]
+  //   }
+  //   console.log(requestBody);
+
+  //   await this.httpProxyPost(url, requestBody)
+  // }
+
+  // private async subscribeWalletToNotifications(walletAddress: string) {
+  //   // return this.notificationsService.createAddresses({
+  //   //   webhookId: webhookID, addresses: [walletAddress]
+  //   // })
+  // }
   // async getHistoricalTxs (user: ISmartWalletUser) { }
 }

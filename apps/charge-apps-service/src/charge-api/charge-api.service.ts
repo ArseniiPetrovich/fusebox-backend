@@ -164,11 +164,22 @@ export class ChargeApiService {
 
   async addWebhookAddress (address: string) {
     const url = `${this.chargeBaseUrl}/api/v0/notifications/webhook/add-addresses?apiKey=${this.chargePublicKey}`
-
     const requestBody = {
       webhookId: this.chargeWebhookId,
       addresses: [address]
     }
+
+    await this.httpProxyPost(url, requestBody)
+  }
+
+  async addWebhookAddressForAA (address: string) {
+    const url = 'http://localhost:5002/api/v0/notifications/webhook/add-addresses?apiKey=pk_nQu6CAR89BWU863Hrq41Ta0y'
+
+    const requestBody = {
+      webhookId: '653a9d562ac2c6cfed39a038',
+      addresses: [address]
+    }
+    console.log(requestBody)
 
     await this.httpProxyPost(url, requestBody)
   }

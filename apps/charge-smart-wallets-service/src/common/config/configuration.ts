@@ -1,4 +1,6 @@
 export default () => ({
+  webhookId: process.env.INCOMING_TOKEN_TRANSFERS_WEBHOOK_ID,
+  SECRET_KEY: 'sk_JGTGLe8ayj3D57xgSrrWJa1I',
   sharedAddresses: {
     WalletFactory: process.env.WALLET_FACTORY,
     WalletImplementation: process.env.WALLET_IMPLEMENTATION,

@@ -10,8 +10,7 @@ export default class Web3ProviderService {
     private configService: ConfigService
   ) {
     this.provider = new Web3(this.configService.get('rpcConfig').rpc.url)
-    console.log('WEB3_PROVIDER_LOGS:');
-    this.provider.eth.subscribe('logs', {}, function (error, result) {
+    this.provider.eth.subscribe('logs', { fromBlock: 'latest' }, function (error, result) {
       if (!error)
         console.log(result);
     }).on("connected", function (subscriptionId) {
@@ -21,9 +20,9 @@ export default class Web3ProviderService {
     })
 
   }
-}
 
-getProvider() {
-  return this.provider
-}
+
+  getProvider() {
+    return this.provider
+  }
 }

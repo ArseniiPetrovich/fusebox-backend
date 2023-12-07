@@ -6,12 +6,12 @@ const BasicTokenAbi = require('@app/smart-wallets-service/common/config/abi/Basi
 
 @Injectable()
 export class TokenService {
-  constructor (
+  constructor(
     private readonly web3ProviderService: Web3ProviderService
 
   ) { }
 
-  async fetchTokenDetails (address: string): Promise<Token> {
+  async fetchTokenDetails(address: string): Promise<Token> {
     if (address === NATIVE_FUSE_TOKEN.address) {
       return {
         name: NATIVE_FUSE_TOKEN.name,
@@ -21,6 +21,7 @@ export class TokenService {
       }
     }
     const web3 = this.web3ProviderService.getProvider()
+
     const tokenContractInstance = new web3.eth.Contract(BasicTokenAbi, address)
     try {
       const [name, symbol, decimals] = await Promise.all([

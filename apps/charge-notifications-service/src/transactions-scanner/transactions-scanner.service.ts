@@ -1,10 +1,10 @@
 import { NATIVE_FUSE_ADDRESS } from '@app/notifications-service/common/constants/addresses'
 import { TokenType } from '@app/notifications-service/common/constants/token-types'
 import { logPerformance } from '@app/notifications-service/common/decorators/log-performance.decorator'
-import Web3ProviderService from '@app/common/services/web3-provider.service'
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { isEmpty } from 'lodash'
+import * as web3Utils from 'web3-utils';
 import { BigNumber, InjectEthersProvider, JsonRpcProvider, formatEther } from 'nestjs-ethers'
 import { TokenEventData } from '@app/notifications-service/common/interfaces/event-data.interface'
 import { WebhooksService } from '@app/notifications-service/webhooks/webhooks.service'
@@ -16,25 +16,21 @@ import { ScannerStatusService } from '@app/notifications-service/common/scanner-
 export class TransactionsScannerService extends ScannerService {
   private readonly filter = 'transactions'
 
-  constructor (
+  constructor(
     configService: ConfigService,
     @Inject(transactionsScannerStatusServiceString)
     scannerStatusService: ScannerStatusService,
     @InjectEthersProvider('full-archive-node')
     readonly rpcProvider: JsonRpcProvider,
-    private readonly web3ProviderService: Web3ProviderService,
 
     private webhooksService: WebhooksService
   ) {
     super(configService, scannerStatusService, rpcProvider, new Logger(TransactionsScannerService.name))
   }
 
-  get web3Provider () {
-    return this.web3ProviderService.getProvider()
-  }
 
   @logPerformance('TransactionsScanner::ProcessBlocks')
-  async processBlocks (fromBlock: number, toBlock: number) {
+  async processBlocks(fromBlock: number, toBlock: number) {
     if (fromBlock > toBlock) return
 
     this.logger.log(`TransactionsScanner: Processing blocks from ${fromBlock} to ${toBlock}`)
@@ -47,7 +43,7 @@ export class TransactionsScannerService extends ScannerService {
   }
 
   @logPerformance('TransactionsScanner::ProcessTraces')
-  async processBlockTraces (blockNumber: number) {
+  async processBlockTraces(blockNumber: number) {
     const blockHash = BigNumber.from(blockNumber).toHexString()
     const blockTraces = await this.rpcProvider.send('trace_block', [blockHash])
 
@@ -69,10 +65,10 @@ export class TransactionsScannerService extends ScannerService {
   }
 
   @logPerformance('TransactionsScanner::ProcessTrace')
-  async processTrace (trace: any) {
+  async processTrace(trace: any) {
     const eventData: TokenEventData = {
-      to: this.web3Provider.utils.toChecksumAddress(trace.action.to),
-      from: this.web3Provider.utils.toChecksumAddress(trace.action.from),
+      to: web3Utils.toChecksumAddress(trace.action.to),
+      from: web3Utils.toChecksumAddress(trace.action.from),
       value: BigNumber.from(trace.action.value).toString(),
       valueEth: formatEther(BigNumber.from(trace.action.value)),
       txHash: trace.transactionHash,
